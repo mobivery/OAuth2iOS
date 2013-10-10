@@ -16,13 +16,18 @@
 
 @implementation MVYViewController
 
+NSString *URL = @"http://peoplesports-staging.herokuapp.com/";
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 	
-	self.clientIDTextField.text = @"144230a47bfe750c1b79b7793efd95cdfa9d42f6e0b66d7fc1e315c84b49aec7";
-	self.secretIDTextField.text = @"3883cb393d665f2f4adc880764b25be87240a4e94c3143114ebb4388d69b079f";
+	//self.clientIDTextField.text = @"144230a47bfe750c1b79b7793efd95cdfa9d42f6e0b66d7fc1e315c84b49aec7";
+	//self.secretIDTextField.text = @"3883cb393d665f2f4adc880764b25be87240a4e94c3143114ebb4388d69b079f";
+    self.clientIDTextField.text = @"63166c5af5a404bc9a8aac0baedee1bac5e01eaf77125afee37ee4d305d88dd6";
+	self.secretIDTextField.text = @"303abbdfbc6632ad41369d7f05d30195959af450d53c4356ce4da96087d3b599";
+	
 	self.userTextField.text		= @"demo2@never.es";
 	self.passwordTextField.text = @"sasasasa";
 	
@@ -52,7 +57,7 @@
 	NSString *user		= self.userTextField.text;
 	NSString *password	= self.passwordTextField.text;
 
-	NSURL *url = [NSURL URLWithString:@"http://localhost:3000/"];
+	NSURL *url = [NSURL URLWithString:URL];
 	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
 					
 	[oauthClient authenticateUsingOAuthWithPath:@"oauth/token"
@@ -114,7 +119,7 @@
  
 
 	
-	NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+	NSURL *url = [NSURL URLWithString:URL];
 	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
     [oauthClient setParameterEncoding:AFJSONParameterEncoding];
     [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -152,7 +157,7 @@
     @{@"id":@25,@"user":@{@"name":@"Pedro", @"team_followed_id":@2, @"gender":@"female",@"postal_address":@"31113"}};
 	
 	
-	NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+	NSURL *url = [NSURL URLWithString:URL];
 	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
     [oauthClient setParameterEncoding:AFJSONParameterEncoding];
     [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -178,7 +183,7 @@
     @{@"user":@{@"name":@"Pedro", @"surname":@"", @"password":self.passwordTextField.text,@"password_confirmation":self.passwordTextField.text,@"email":self.userTextField.text, @"gender":@"female",@"postal_address":@"31113", @"role":@1}};
 	
 	
-	NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+	NSURL *url = [NSURL URLWithString:URL];
 	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
     [oauthClient setParameterEncoding:AFJSONParameterEncoding];
     [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -203,7 +208,7 @@
         NSDictionary *parameters = @{@"name":self.userTextField.text, @"credit_card_name":@"Pedro", @"credit_card_number":@"5555555555554444",@"credit_card_cvv":@"311",@"credit_card_date":@"05/2014"};
         
         
-        NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+        NSURL *url = [NSURL URLWithString:URL];
         AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
         [oauthClient setParameterEncoding:AFJSONParameterEncoding];
         [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -230,7 +235,7 @@
     NSDictionary *parameters = @{@"credit_card_name":@"Pedro", @"credit_card_number":@"4005519200000004",@"credit_card_cvv":@"311",@"credit_card_date":@"05/2015"};
     
     
-    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    NSURL *url = [NSURL URLWithString:URL];
     AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
     [oauthClient setParameterEncoding:AFJSONParameterEncoding];
     [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -254,7 +259,7 @@
     NSDictionary *parameters = @{};
     
     
-    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    NSURL *url = [NSURL URLWithString:URL];
     AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
     [oauthClient setParameterEncoding:AFJSONParameterEncoding];
     [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -274,7 +279,7 @@
     NSDictionary *parameters = @{@"credit_card_name":@"Pedro", @"credit_card_number":@"4005519200000004",@"credit_card_cvv":@"311",@"credit_card_date":@"05/2015"};
     
     
-    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    NSURL *url = [NSURL URLWithString:URL];
     AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
     [oauthClient setParameterEncoding:AFJSONParameterEncoding];
     [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -299,7 +304,7 @@
     NSDictionary *parameters = @{@"amount":@"213", @"number":@"2",@"match_id":self.matchIdTextField.text,@"method":@"paypal"};
     
     
-    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    NSURL *url = [NSURL URLWithString:URL];
     AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
     [oauthClient setParameterEncoding:AFJSONParameterEncoding];
     [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
@@ -333,10 +338,10 @@
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *URLString = [[request URL] absoluteString];
-    if ([URLString isEqualToString:@"http://success.fake-url.es/"]) {
+    if ([URLString isEqualToString:@"success:fake:url:es/"]) {
         [webView removeFromSuperview];
     }
-    if ([URLString isEqualToString:@"http://fail.fake-url.es/"]) {
+    if ([URLString isEqualToString:@"fail:fake:url:es/"]) {
         [webView removeFromSuperview];
     }
     return YES;
