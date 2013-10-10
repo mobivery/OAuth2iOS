@@ -21,10 +21,10 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 	
-	self.clientIDTextField.text = @"";
-	self.secretIDTextField.text = @"";
-	self.userTextField.text		= @"";
-	self.passwordTextField.text = @"";
+	self.clientIDTextField.text = @"144230a47bfe750c1b79b7793efd95cdfa9d42f6e0b66d7fc1e315c84b49aec7";
+	self.secretIDTextField.text = @"3883cb393d665f2f4adc880764b25be87240a4e94c3143114ebb4388d69b079f";
+	self.userTextField.text		= @"demo2@never.es";
+	self.passwordTextField.text = @"sasasasa";
 	
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
 	[self.view addGestureRecognizer:tap];
@@ -52,7 +52,7 @@
 	NSString *user		= self.userTextField.text;
 	NSString *password	= self.passwordTextField.text;
 
-	NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+	NSURL *url = [NSURL URLWithString:@"http://localhost:3000/"];
 	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
 					
 	[oauthClient authenticateUsingOAuthWithPath:@"oauth/token"
@@ -67,19 +67,95 @@
 											self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
 										}];
 	
+    
 }
 
-- (IBAction)tryService:(id)sender {
-	
-	NSString *clientID	= self.clientIDTextField.text;
+- (IBAction)createUserService:(id)sender {
+    
+	[self createUser];
+		
+}
+
+- (IBAction)modifyUserService:(id)sender {
+    
+	[self modifyUser];
+    
+}
+
+- (IBAction)createCardToUserService:(id)sender {
+    
+	[self createCard];
+    
+}
+
+- (IBAction)getMeService:(id)sender {
+    
+	[self meUser];
+    
+}
+
+- (IBAction)getMeCardService:(id)sender {
+    
+	[self meCards];
+    
+}
+
+- (IBAction)payService:(id)sender {
+    
+	[self createPayment];
+    
+}
+
+-(void) modifyUser {
+    NSString *clientID	= self.clientIDTextField.text;
 	NSString *secretID	= self.secretIDTextField.text;
 	
-	NSString *path = @"api/v1/matches";
-	NSDictionary *parameters = @{@"latitude": @36.793729017697189, @"longitude": @-7.301390142330979, @"distance": @2000};
+	NSString *path = @"api/v1/users/me";
+ 
+
+	
+	NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+	[oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+	[oauthClient getPath:path parameters:@{} success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        id me = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+        NSString *path = [NSString stringWithFormat:@"api/v1/users/%@", me[@"user"][@"id"] ];
+        NSDictionary *parameters = //@{@"id":@24};
+        @{@"id":@25,@"user":@{@"name":@"Pedro",@"surname":@"Gomez", @"teams_followeds":@[@"Real Madrid"], @"gender":@"female",@"postal_address":@"31113"}};
+        
+        
+        [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+        [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+        [oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+        [oauthClient putPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+            self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];
+            
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+        }];
+
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+	}];
+	
+}
+
+-(void) meUser {
+    NSString *clientID	= self.clientIDTextField.text;
+	NSString *secretID	= self.secretIDTextField.text;
+	
+	NSString *path = @"api/v1/users/me";
+	NSDictionary *parameters = //@{@"id":@24};
+    @{@"id":@25,@"user":@{@"name":@"Pedro", @"team_followed_id":@2, @"gender":@"female",@"postal_address":@"31113"}};
 	
 	
 	NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
 	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
 	[oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
 	[oauthClient getPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
@@ -88,7 +164,182 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
 	}];
+    
+    [self signout];
+}
+
+
+-(void) createUser {
+    NSString *clientID	= self.clientIDTextField.text;
+	NSString *secretID	= self.secretIDTextField.text;
 	
+	NSString *path = @"api/v1/registrations";
+	NSDictionary *parameters = //@{@"id":@24};
+    @{@"user":@{@"name":@"Pedro", @"surname":@"", @"password":self.passwordTextField.text,@"password_confirmation":self.passwordTextField.text,@"email":self.userTextField.text, @"gender":@"female",@"postal_address":@"31113", @"role":@1}};
+	
+	
+	NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+	AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+	[oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+	[oauthClient postPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+		self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+	}];
+    
+}
+
+
+-(void) createCard {
+
+        NSString *clientID	= self.clientIDTextField.text;
+        NSString *secretID	= self.secretIDTextField.text;
+        
+        NSString *path = @"api/v1/payments";
+        NSDictionary *parameters = @{@"name":self.userTextField.text, @"credit_card_name":@"Pedro", @"credit_card_number":@"5555555555554444",@"credit_card_cvv":@"311",@"credit_card_date":@"05/2014"};
+        
+        
+        NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+        AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+        [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+        [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+        [oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+        [oauthClient postPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+            self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];
+            
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+        }];
+
+    
+    
+
+}
+
+-(void) modifyCard {
+    
+    NSString *clientID	= self.clientIDTextField.text;
+    NSString *secretID	= self.secretIDTextField.text;
+    
+    NSString *path = @"api/v1/payments/2";
+    NSDictionary *parameters = @{@"credit_card_name":@"Pedro", @"credit_card_number":@"4005519200000004",@"credit_card_cvv":@"311",@"credit_card_date":@"05/2015"};
+    
+    
+    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    [oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+    [oauthClient putPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+        self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+    }];
+    
+}
+
+-(void) signout {
+    
+    NSString *clientID	= self.clientIDTextField.text;
+    NSString *secretID	= self.secretIDTextField.text;
+    
+    NSString *path = @"users/sign_out";
+    NSDictionary *parameters = @{};
+    
+    
+    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    [oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+    [oauthClient deletePath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {}];
+    
+}
+
+-(void) meCards {
+    
+    NSString *clientID	= self.clientIDTextField.text;
+    NSString *secretID	= self.secretIDTextField.text;
+    
+    NSString *path = @"api/v1/payments";
+    NSDictionary *parameters = @{@"credit_card_name":@"Pedro", @"credit_card_number":@"4005519200000004",@"credit_card_cvv":@"311",@"credit_card_date":@"05/2015"};
+    
+    
+    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    [oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+    [oauthClient getPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+        self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+    }];
+    
+}
+
+
+-(void) createPayment {
+    
+    NSString *clientID	= self.clientIDTextField.text;
+    NSString *secretID	= self.secretIDTextField.text;
+    
+    NSString *path = @"api/v1/bids";
+    NSDictionary *parameters = @{@"amount":@"213", @"number":@"2",@"match_id":self.matchIdTextField.text,@"method":@"paypal"};
+    
+    
+    NSURL *url = [NSURL URLWithString:@"http://localhost:3000"];
+    AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    [oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+    [oauthClient postPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+        self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:self.view.frame];
+      
+        [webView setDelegate:self];
+        
+        NSString *urlAddress =JSON[@"url"];//
+        NSURL *url = [NSURL URLWithString:urlAddress];
+        
+        //URL Requst Object
+        NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
+        
+        if ([JSON[@"status"] isEqualToString:@"ok"]) {
+            [self.view addSubview:webView];
+            [webView loadRequest:requestObj];
+        } else {
+            self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];
+        }
+
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+    }];
+    
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    NSString *URLString = [[request URL] absoluteString];
+    if ([URLString isEqualToString:@"http://success.fake-url.es/"]) {
+        [webView removeFromSuperview];
+    }
+    if ([URLString isEqualToString:@"http://fail.fake-url.es/"]) {
+        [webView removeFromSuperview];
+    }
+    return YES;
 }
 
 @end

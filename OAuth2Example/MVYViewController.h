@@ -8,12 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MVYViewController : UIViewController
+@interface MVYViewController : UIViewController <UIWebViewDelegate>
 
 @property (nonatomic, weak) IBOutlet UITextField *clientIDTextField;
 @property (nonatomic, weak) IBOutlet UITextField *secretIDTextField;
 @property (nonatomic, weak) IBOutlet UITextField *userTextField;
 @property (nonatomic, weak) IBOutlet UITextField *passwordTextField;
+@property (nonatomic, weak) IBOutlet UITextField *matchIdTextField;
 @property (nonatomic, weak) IBOutlet UITextView *responseTextView;
 
 @end
