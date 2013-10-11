@@ -15,6 +15,8 @@
 @property (nonatomic, weak) IBOutlet UITextField *userTextField;
 @property (nonatomic, weak) IBOutlet UITextField *passwordTextField;
 @property (nonatomic, weak) IBOutlet UITextField *matchIdTextField;
+@property (nonatomic, weak) IBOutlet UITextField *amountTextField;
+@property (nonatomic, weak) IBOutlet UITextField *numberTextField;
 @property (nonatomic, weak) IBOutlet UITextView *responseTextView;
 
 @end

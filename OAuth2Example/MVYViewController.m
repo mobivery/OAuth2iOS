@@ -30,6 +30,9 @@ NSString *URL = @"http://peoplesports-staging.herokuapp.com/";
 	
 	self.userTextField.text		= @"demo2@never.es";
 	self.passwordTextField.text = @"sasasasa";
+    
+    self.amountTextField.text = @"213";
+    self.numberTextField.text = @"2";
 	
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
 	[self.view addGestureRecognizer:tap];
@@ -43,11 +46,13 @@ NSString *URL = @"http://peoplesports-staging.herokuapp.com/";
 
 -(void)hideKeyboard {
 	
-	for (UIView *view in self.view.subviews) {
-		if ([view respondsToSelector:@selector(resignFirstResponder)]){
-			[view resignFirstResponder];
-		}
-	}
+    [self.clientIDTextField resignFirstResponder];
+    [self.secretIDTextField resignFirstResponder];
+    [self.userTextField resignFirstResponder];
+    [self.passwordTextField resignFirstResponder];
+    [self.amountTextField resignFirstResponder];
+    [self.numberTextField resignFirstResponder];
+	
 }
 
 - (IBAction)authenticate:(id)sender {
@@ -72,43 +77,50 @@ NSString *URL = @"http://peoplesports-staging.herokuapp.com/";
 											self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
 										}];
 	
-    
+    [self hideKeyboard];
 }
 
 - (IBAction)createUserService:(id)sender {
     
 	[self createUser];
+    [self hideKeyboard];
 		
 }
 
 - (IBAction)modifyUserService:(id)sender {
     
 	[self modifyUser];
-    
+        [self hideKeyboard];
 }
 
 - (IBAction)createCardToUserService:(id)sender {
     
 	[self createCard];
-    
+        [self hideKeyboard];
 }
 
 - (IBAction)getMeService:(id)sender {
     
 	[self meUser];
-    
+        [self hideKeyboard];
 }
 
 - (IBAction)getMeCardService:(id)sender {
     
 	[self meCards];
-    
+        [self hideKeyboard];
 }
 
 - (IBAction)payService:(id)sender {
     
-	[self createPayment];
+	[self createPayPalPayment];
+        [self hideKeyboard];
+}
+
+- (IBAction)payCardService:(id)sender {
     
+	[self createCardPayment];
+    [self hideKeyboard];
 }
 
 -(void) modifyUser {
@@ -295,13 +307,13 @@ NSString *URL = @"http://peoplesports-staging.herokuapp.com/";
 }
 
 
--(void) createPayment {
+-(void) createPayPalPayment {
     
     NSString *clientID	= self.clientIDTextField.text;
     NSString *secretID	= self.secretIDTextField.text;
     
     NSString *path = @"api/v1/bids";
-    NSDictionary *parameters = @{@"amount":@"213", @"number":@"2",@"match_id":self.matchIdTextField.text,@"method":@"paypal"};
+    NSDictionary *parameters = @{@"amount":self.amountTextField.text, @"number":self.numberTextField.text,@"match_id":self.matchIdTextField.text,@"method":@"paypal"};
     
     
     NSURL *url = [NSURL URLWithString:URL];
@@ -336,12 +348,37 @@ NSString *URL = @"http://peoplesports-staging.herokuapp.com/";
     
 }
 
+-(void) createCardPayment {
+    
+    NSString *clientID	= self.clientIDTextField.text;
+    NSString *secretID	= self.secretIDTextField.text;
+    
+    NSString *path = @"api/v1/bids";
+    NSDictionary *parameters = @{@"amount":self.amountTextField.text, @"number":self.numberTextField.text,@"match_id":self.matchIdTextField.text,@"method":@"card"};
+    
+    
+    NSURL *url = [NSURL URLWithString:URL];
+    AFOAuth2Client *oauthClient = [AFOAuth2Client clientWithBaseURL:url clientID:clientID secret:secretID];
+    [oauthClient setParameterEncoding:AFJSONParameterEncoding];
+    [oauthClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    [oauthClient setAuthorizationHeaderWithCredential:[AFOAuthCredential retrieveCredentialWithIdentifier:oauthClient.serviceProviderIdentifier]];
+    [oauthClient postPath:path parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        id JSON = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
+        self.responseTextView.text = [NSString stringWithFormat:@"Response: %@", JSON];        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        self.responseTextView.text = [NSString stringWithFormat:@"Error: %@", error.localizedDescription];
+    }];
+    
+}
+
+
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *URLString = [[request URL] absoluteString];
-    if ([URLString isEqualToString:@"success:fake:url:es/"]) {
+    NSLog(@"%@",URLString);
+    if ([URLString isEqualToString:@"success:fake-url:es"]) {
         [webView removeFromSuperview];
     }
-    if ([URLString isEqualToString:@"fail:fake:url:es/"]) {
+    if ([URLString isEqualToString:@"fail:fake-url:es"]) {
         [webView removeFromSuperview];
     }
     return YES;
